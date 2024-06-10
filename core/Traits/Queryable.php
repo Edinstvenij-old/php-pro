@@ -81,7 +81,7 @@ trait Queryable
 
     protected function where(string $column, SQL $operator = SQL::EQUAL, mixed $value = null): static
     {
-        $this->prevent(['order', 'limit', 'having', 'group', 'where'], 'WHERE can not be used after');
+        $this->prevent(['order', 'limit', 'having', 'group'/*, 'where'*/], 'WHERE can not be used after');
         $obj = in_array('select', $this->commands) ? $this : static::select();
 
         if (
@@ -104,11 +104,10 @@ trait Queryable
 
         if (!in_array('where', $obj->commands)) {
             static::$query .= " WHERE";
-
+            $obj->commands[] = 'where';
         }
 
         static::$query .= " $column $operator->value $value";
-        $obj->commands[] = 'where';
 
         return $obj;
     }

@@ -13,7 +13,7 @@ class FoldersController extends BaseApiController
     {
         $folders = Folder::select(['id', 'title'])
             ->where('id', SQL::IN, [1, 2])
-            //->and('title', SQL::EQUAL, 'folder 5')
+            ->and('title', SQL::EQUAL, 'folder 2')
             ->get();
 
         return $this->response(Status::OK, $folders);
