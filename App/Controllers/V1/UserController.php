@@ -13,8 +13,8 @@ class UserController extends BaseApiController
     public function index()
     {
         $users = User::select(['name', 'age', 'email'])
-            ->where('id', SQL::IN, [1, 5])
-            //->and('name', SQL::EQUAL, 'Denys')
+            ->where('id', SQL::IN, [1, 4])
+            ->or('name', SQL::EQUAL, 'Nik')
             ->get();
 
         return $this->response(Status::OK, $users);
