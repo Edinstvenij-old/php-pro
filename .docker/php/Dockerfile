@@ -1,5 +1,7 @@
 FROM php:8.3-apache
 
+RUN pecl install xdebug-3.3.2 && docker-php-ext-enable xdebug
+
 RUN docker-php-ext-install -j$(nproc) pdo_mysql
 
 RUN apt-get update && apt-get upgrade -y && apt-get install -y git
@@ -9,3 +11,5 @@ RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local
 RUN /usr/sbin/a2enmod rewrite
 
 COPY default.conf /etc/apache2/sites-available/000-default.conf
+
+COPY xdebug.ini  /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini

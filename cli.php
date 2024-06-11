@@ -1,5 +1,4 @@
 #!/usr/local/bin/php
-<!--#!/usr/bin/php-->
 <?php
 const BASE_DIR = __DIR__;
 
@@ -13,7 +12,7 @@ use splitbrain\phpcli\Options;
 
 class CliHelper extends CLI
 {
-    // register options and arguments
+    // Регистрация опций и аргументов
     protected function setup(Options $options)
     {
         $options->registerCommand('migration:create', 'Create migration file');
@@ -21,7 +20,7 @@ class CliHelper extends CLI
         $options->registerCommand('migration:run', 'Run all migration files');
     }
 
-    // implement your code
+    // Основная реализация кода
     protected function main(Options $options)
     {
         $cmd = match ($options->getCmd()) {

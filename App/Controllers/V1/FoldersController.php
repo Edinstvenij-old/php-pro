@@ -1,23 +1,22 @@
 <?php
 
-
 namespace App\Controllers\V1;
 
 use App\Controllers\BaseApiController;
 use App\Enums\DB\SQL;
 use App\Enums\Http\Status;
-use App\Models\User;
+use App\Models\Folder;
 
-class UserController extends BaseApiController
+class FoldersController extends BaseApiController
 {
     public function index()
     {
-        $users = User::select(['name', 'age', 'email'])
-            ->where('id', SQL::IN, [1, 4])
-            ->or('name', SQL::EQUAL, 'Nik')
+        $folders = Folder::select(['id', 'title'])
+            ->where('id', SQL::IN, [1, 2])
+            ->and('title', SQL::EQUAL, 'folder 2')
             ->get();
 
-        return $this->response(Status::OK, $users);
+        return $this->response(Status::OK, $folders);
     }
 
     public function show(int $id)

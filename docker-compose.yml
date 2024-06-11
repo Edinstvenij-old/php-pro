@@ -13,7 +13,7 @@ services:
       context: .docker/php
     restart: always
     ports:
-      - "8081:80" # http: 80 -> http://localhost:8081 | http://127.0.0.1:8081 https: 443
+      - "8081:80" # http: 80 -> http://localhost:8081 | http://127.0.0.1:8081
     volumes:
       - .:/var/www/html
     env_file:
