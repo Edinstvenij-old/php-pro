@@ -19,4 +19,14 @@ function jsonResponse(Status $status, array $data = []): string
         ...$status->withDescription(),
         'data' => $data
     ]);
+    function jsonResponse(int $status, array $body) {
+        http_response_code($status);
+        header('Content-Type: application/json');
+        echo json_encode([
+            'code' => $status,
+            'status' => $status . ' ' . getStatusCodeMessage($status),
+            'data' => $body,
+            'errors' => []
+        ]);
+    }
 }

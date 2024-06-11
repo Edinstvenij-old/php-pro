@@ -11,18 +11,18 @@ Router::post('api/auth')
 
 // CRUD -> CREATE READ UPDATE DELETE -> index show store update delete
 
-Router::get('api/v1/folders')
-    ->controller(\App\Controllers\V1\FoldersController::class)
+Router::get('api/v1/users')
+    ->controller(\App\Controllers\V1\UserController::class)
     ->action('index');
-Router::get('api/v1/folders/{id:\d+}')
-    ->controller(\App\Controllers\V1\FoldersController::class)
+Router::get('api/v1/users/{id:\d+}')
+    ->controller(\App\Controllers\V1\UserController::class)
     ->action('show');
-Router::post('api/v1/folders/store')
-    ->controller(\App\Controllers\V1\FoldersController::class)
+Router::post('api/v1/users/store')
+    ->controller(\App\Controllers\V1\UserController::class)
     ->action('store');
-Router::put('api/v1/folders/{id:\d+}/update')
-    ->controller(\App\Controllers\V1\FoldersController::class)
+Router::put('api/v1/users/{id:\d+}/update')
+    ->controller(\App\Controllers\V1\UserController::class)
     ->action('update');
-Router::delete('api/v1/folders/{id:\d+}/delete')
-    ->controller(\App\Controllers\V1\FoldersController::class)
+Router::delete('api/v1/users/{id:\d+}/delete')
+    ->controller(\App\Controllers\V1\UserController::class)
     ->action('delete');

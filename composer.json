@@ -3,8 +3,8 @@
     "type": "project",
     "autoload": {
         "psr-4": {
-            "App\\": "App/",
-            "Core\\": "core/"
+            "App\\": "App",
+            "Core\\": "core"
         },
         "files": [
             "core/helpers.php",
