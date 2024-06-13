@@ -13,10 +13,11 @@ function jsonResponse(Status $status, array $data = []): string
     header_remove();
     http_response_code($status->value);
     header("Content-Type: application/json");
-    header("Status: $status->value");
+    header("Status: {$status->value} {$status->name}");
 
     return json_encode([
-        ...$status->withDescription(),
+        'code' => $status->value,
+        'status' => "{$status->value} {$status->name}",
         'data' => $data
     ]);
 }

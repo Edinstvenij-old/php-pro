@@ -7,6 +7,7 @@ use App\Models\User;
 use App\Validators\Auth\AuthValidator;
 use App\Validators\Auth\RegisterValidator;
 use Core\Controller;
+use App\Models\TokenManager;
 use ReallySimpleJWT\Token;
 
 class AuthController extends Controller
@@ -16,14 +17,35 @@ class AuthController extends Controller
         $fields = requestBody();
         if (RegisterValidator::validate($fields)) {
             $user = User::create([
-                ...$fields,
+                'email' => $fields['email'],
                 'password' => password_hash($fields['password'], PASSWORD_BCRYPT)
             ]);
 
             return $this->response(Status::OK, $user->toArray());
         }
 
-        return $this->response(Status::UNPROCESSABLE_ENTITY, $fields, RegisterValidator::getErrors());
+        return $this->response(Status::UNPROCESSABLE_ENTITY, RegisterValidator::getErrors());
+    }
+
+    public function login()
+    {
+        $fields = requestBody();
+
+        if (AuthValidator::validate($fields)) {
+            $user = User::findBy('email', $fields['email']);
+
+            if ($user && password_verify($fields['password'], $user->password)) {
+                $expiration = time() + 3600; // 1 hour expiration
+                $token = Token::create($user->id, $user->password, $expiration, 'localhost');
+
+                return $this->response(Status::OK, [
+                    'token' => $token,
+                    'user' => $user->toArray(),
+                ]);
+            }
+        }
+
+        return $this->response(Status::UNPROCESSABLE_ENTITY, AuthValidator::getErrors());
     }
 
     public function auth()
@@ -36,11 +58,15 @@ class AuthController extends Controller
             if (password_verify($fields['password'], $user->password)) {
                 $expiration = time() + 3600;
                 $token = Token::create($user->id, $user->password, $expiration, 'localhost');
+                TokenManager::storeToken($user->id, $token, date('Y-m-d H:i:s', $expiration));
 
-                return $this->response(Status::OK, compact('token'));
+                return $this->response(Status::OK, [
+                    'token' => $token,
+                    'user' => $user->toArray(),
+                ]);
             }
         }
 
-        return $this->response(Status::UNPROCESSABLE_ENTITY, errors: RegisterValidator::getErrors());
+        return $this->response(Status::UNPROCESSABLE_ENTITY, AuthValidator::getErrors());
     }
 }

@@ -12,4 +12,4 @@ RUN /usr/sbin/a2enmod rewrite
 
 COPY default.conf /etc/apache2/sites-available/000-default.conf
 
-COPY xdebug.ini  /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini
+

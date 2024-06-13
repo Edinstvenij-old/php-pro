@@ -5,6 +5,9 @@ use Core\Router;
 Router::post('api/auth/register')
     ->controller(\App\Controllers\AuthController::class)
     ->action('register');
+Router::post('api/auth/login')
+    ->controller(\App\Controllers\AuthController::class)
+    ->action('login');
 Router::post('api/auth')
     ->controller(\App\Controllers\AuthController::class)
     ->action('auth');
