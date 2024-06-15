@@ -6,67 +6,88 @@ use App\Controllers\BaseApiController;
 use App\Enums\DB\SQL;
 use App\Enums\Http\Status;
 use App\Models\Folder;
-use App\Models\Note;
 use App\Validators\FolderValidator;
 use Exception;
 
 class FoldersController extends BaseApiController
 {
+    // Перегляд всіх папок
     public function index(): array
     {
         $folders = Folder::where('user_id', SQL::EQUAL, authId())
-            ->or('user_id', SQL::IS)
-            ->orderBy([
-                'user_id' => 'ASC',
-                'title' => 'ASC'
-            ])
+            ->orWhere('user_id', SQL::IS, null)
+            ->orderBy('user_id', 'ASC')
+            ->orderBy('title', 'ASC')
             ->get();
 
         return $this->response(Status::OK, $folders);
     }
 
+    // Перегляд папки по id
     public function show(int $id): array
     {
-        return $this->response(Status::OK, Folder::find($id)->toArray());
+        $folder = Folder::find($id);
+
+        if (!$folder) {
+            return $this->response(Status::NOT_FOUND, errors: [
+                'message' => 'Folder not found'
+            ]);
+        }
+
+        return $this->response(Status::OK, $folder->toArray());
     }
 
+    // Створення нової папки
     public function store(): array
     {
         $fields = requestBody();
 
-        if (FolderValidator::validate($fields) && $folder = Folder::create([...$fields, 'user_id' => authId()])) {
-            return $this->response(Status::OK, $folder->toArray());
+        if (FolderValidator::validate($fields)) {
+            $fields['user_id'] = authId();
+            $folder = Folder::create($fields);
+
+            return $this->response(Status::CREATED, $folder->toArray());
         }
 
-        return $this->response(Status::OK, errors: FolderValidator::getErrors());
+        return $this->response(Status::UNPROCESSABLE_ENTITY, errors: FolderValidator::getErrors());
     }
 
+    // Оновлення існуючої папки
     public function update(int $id): array
     {
         $fields = requestBody();
-        $updateFields = [
-            ...$fields,
-            'updated_at' => date('Y-m-d H:i:s')
-        ];
+        $folder = Folder::find($id);
 
-        if (FolderValidator::validate($fields) && $folder = $this->model->update($updateFields)) {
-            return $this->response(Status::OK, $folder->toArray());
-        }
-
-        return $this->response(Status::OK, errors: FolderValidator::getErrors());
-    }
-
-    public function delete(int $id): array
-    {
-        $result = Folder::destroy($id);
-
-        if (!$result) {
-            return $this->response(Status::UNPROCESSABLE_ENTITY, errors: [
-                'message' => 'Oops, smth went wrong'
+        if (!$folder) {
+            return $this->response(Status::NOT_FOUND, errors: [
+                'message' => 'Folder not found'
             ]);
         }
 
-        return $this->response(Status::OK, $this->model->toArray());
+        if (FolderValidator::validate($fields)) {
+            $fields['updated_at'] = date('Y-m-d H:i:s');
+            $folder->update($fields);
+
+            return $this->response(Status::OK, $folder->toArray());
+        }
+
+        return $this->response(Status::UNPROCESSABLE_ENTITY, errors: FolderValidator::getErrors());
+    }
+
+    // Видалення папки
+    public function destroy(int $id): array
+    {
+        $folder = Folder::find($id);
+
+        if (!$folder) {
+            return $this->response(Status::NOT_FOUND, errors: [
+                'message' => 'Folder not found'
+            ]);
+        }
+
+        $folder->delete();
+
+        return $this->response(Status::NO_CONTENT);
     }
 
     protected function getModelClass(): string
