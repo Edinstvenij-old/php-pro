@@ -1,5 +1,4 @@
 #!/usr/local/bin/php
-<!--#!/usr/bin/php-->
 <?php
 const BASE_DIR = __DIR__;
 
@@ -8,6 +7,7 @@ require BASE_DIR . '/vendor/autoload.php';
 use App\Commands\Command;
 use App\Commands\MigrationCreate;
 use App\Commands\MigrationRun;
+use Dotenv\Dotenv;
 use splitbrain\phpcli\CLI;
 use splitbrain\phpcli\Options;
 
@@ -19,6 +19,9 @@ class CliHelper extends CLI
         $options->registerCommand('migration:create', 'Create migration file');
         $options->registerArgument('name', 'Migration file name', true, 'migration:create');
         $options->registerCommand('migration:run', 'Run all migration files');
+
+        $dotenv = Dotenv::createUnsafeImmutable(BASE_DIR);
+        $dotenv->load();
     }
 
     // implement your code

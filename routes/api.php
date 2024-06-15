@@ -26,3 +26,19 @@ Router::put('api/v1/folders/{id:\d+}/update')
 Router::delete('api/v1/folders/{id:\d+}/delete')
     ->controller(\App\Controllers\V1\FoldersController::class)
     ->action('delete');
+
+Router::get('api/v1/notes')
+    ->controller(\App\Controllers\V1\NotesController::class)
+    ->action('index');
+Router::get('api/v1/notes/{id:\d+}')
+    ->controller(\App\Controllers\V1\NotesController::class)
+    ->action('show');
+Router::post('api/v1/notes/store')
+    ->controller(\App\Controllers\V1\NotesController::class)
+    ->action('store');
+Router::put('api/v1/notes/{id:\d+}/update')
+    ->controller(\App\Controllers\V1\NotesController::class)
+    ->action('update');
+Router::delete('api/v1/notes/{id:\d+}/delete')
+    ->controller(\App\Controllers\V1\NotesController::class)
+    ->action('delete');
