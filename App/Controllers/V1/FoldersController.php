@@ -6,7 +6,6 @@ use App\Controllers\BaseApiController;
 use App\Enums\DB\SQL;
 use App\Enums\Http\Status;
 use App\Models\Folder;
-use App\Models\Note;
 use App\Validators\FolderValidator;
 use Exception;
 

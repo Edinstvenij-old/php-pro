@@ -59,11 +59,11 @@ class NotesController extends BaseApiController
             'updated_at' => date('Y-m-d H:i:s')
         ];
 
-        if (NoteValidator::validate($fields) && $Note = $this->model->update($updateFields)) {
+        if (CreateNoteValidator::validate($fields) && $Note = $this->model->update($updateFields)) {
             return $this->response(Status::OK, $Note->toArray());
         }
 
-        return $this->response(Status::OK, errors: NoteValidator::getErrors());
+        return $this->response(Status::OK, errors: CreateNoteValidator::getErrors());
     }
 
     public function delete(int $id): array
