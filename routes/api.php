@@ -1,44 +1,48 @@
 <?php
 
 use Core\Router;
+use App\Controllers\AuthController;
+use App\Controllers\V1\FoldersController;
+use App\Controllers\V1\NotesController;
 
+// Authentication routes
 Router::post('api/auth/register')
-    ->controller(\App\Controllers\AuthController::class)
+    ->controller(AuthController::class)
     ->action('register');
 Router::post('api/auth')
-    ->controller(\App\Controllers\AuthController::class)
+    ->controller(AuthController::class)
     ->action('auth');
 
-// CRUD -> CREATE READ UPDATE DELETE -> index show store update delete
-
+// CRUD routes for folders
 Router::get('api/v1/folders')
-    ->controller(\App\Controllers\V1\FoldersController::class)
+    ->controller(FoldersController::class)
     ->action('index');
 Router::get('api/v1/folders/{id:\d+}')
-    ->controller(\App\Controllers\V1\FoldersController::class)
+    ->controller(FoldersController::class)
     ->action('show');
 Router::post('api/v1/folders/store')
-    ->controller(\App\Controllers\V1\FoldersController::class)
+    ->controller(FoldersController::class)
     ->action('store');
 Router::put('api/v1/folders/{id:\d+}/update')
-    ->controller(\App\Controllers\V1\FoldersController::class)
+    ->controller(FoldersController::class)
     ->action('update');
 Router::delete('api/v1/folders/{id:\d+}/delete')
-    ->controller(\App\Controllers\V1\FoldersController::class)
+    ->controller(FoldersController::class)
     ->action('delete');
 
+// CRUD routes for notes
 Router::get('api/v1/notes')
-    ->controller(\App\Controllers\V1\NotesController::class)
+    ->controller(NotesController::class)
     ->action('index');
 Router::get('api/v1/notes/{id:\d+}')
-    ->controller(\App\Controllers\V1\NotesController::class)
+    ->controller(NotesController::class)
     ->action('show');
 Router::post('api/v1/notes/store')
-    ->controller(\App\Controllers\V1\NotesController::class)
+    ->controller(NotesController::class)
     ->action('store');
 Router::put('api/v1/notes/{id:\d+}/update')
-    ->controller(\App\Controllers\V1\NotesController::class)
+    ->controller(NotesController::class)
     ->action('update');
 Router::delete('api/v1/notes/{id:\d+}/delete')
-    ->controller(\App\Controllers\V1\NotesController::class)
+    ->controller(NotesController::class)
     ->action('delete');

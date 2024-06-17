@@ -26,46 +26,90 @@ class FoldersController extends BaseApiController
 
     public function show(int $id): array
     {
-        return $this->response(Status::OK, Folder::find($id)->toArray());
+        try {
+            $folder = Folder::find($id);
+
+            if (!$folder) {
+                return $this->response(Status::NOT_FOUND, ['message' => 'Folder not found']);
+            }
+
+            return $this->response(Status::OK, $folder->toArray());
+        } catch (Exception $e) {
+            return $this->response(Status::INTERNAL_SERVER_ERROR, [
+                'message' => 'Failed to fetch folder details'
+            ]);
+        }
     }
 
     public function store(): array
     {
-        $fields = requestBody();
+        try {
+            $fields = requestBody();
 
-        if (FolderValidator::validate($fields) && $folder = Folder::create([...$fields, 'user_id' => authId()])) {
-            return $this->response(Status::OK, $folder->toArray());
+            if (FolderValidator::validate($fields)) {
+                $folder = Folder::create([...$fields, 'user_id' => authId()]);
+                return $this->response(Status::CREATED, $folder->toArray());
+            }
+
+            return $this->response(Status::UNPROCESSABLE_ENTITY, FolderValidator::getErrors());
+        } catch (Exception $e) {
+            return $this->response(Status::INTERNAL_SERVER_ERROR, [
+                'message' => 'Failed to create folder'
+            ]);
         }
-
-        return $this->response(Status::OK, errors: FolderValidator::getErrors());
     }
 
     public function update(int $id): array
     {
-        $fields = requestBody();
-        $updateFields = [
-            ...$fields,
-            'updated_at' => date('Y-m-d H:i:s')
-        ];
+        try {
+            $fields = requestBody();
+            $updateFields = [
+                ...$fields,
+                'updated_at' => date('Y-m-d H:i:s')
+            ];
 
-        if (FolderValidator::validate($fields) && $folder = $this->model->update($updateFields)) {
-            return $this->response(Status::OK, $folder->toArray());
+            if (FolderValidator::validate($fields)) {
+                $folder = Folder::find($id);
+
+                if (!$folder) {
+                    return $this->response(Status::NOT_FOUND, ['message' => 'Folder not found']);
+                }
+
+                $folder->update($updateFields);
+                return $this->response(Status::OK, $folder->toArray());
+            }
+
+            return $this->response(Status::UNPROCESSABLE_ENTITY, FolderValidator::getErrors());
+        } catch (Exception $e) {
+            return $this->response(Status::INTERNAL_SERVER_ERROR, [
+                'message' => 'Failed to update folder'
+            ]);
         }
-
-        return $this->response(Status::OK, errors: FolderValidator::getErrors());
     }
 
     public function delete(int $id): array
     {
-        $result = Folder::destroy($id);
+        try {
 
-        if (!$result) {
-            return $this->response(Status::UNPROCESSABLE_ENTITY, errors: [
-                'message' => 'Oops, smth went wrong'
+            $this->checkModelOwner('delete', [$id], Folder::class);
+
+            $folder = Folder::find($id);
+            if (!$folder) {
+                return $this->response(Status::NOT_FOUND, [
+                    'message' => 'Folder not found'
+                ]);
+            }
+
+            $folder->delete();
+
+            return $this->response(Status::OK, [
+                'message' => 'Folder deleted successfully'
+            ]);
+        } catch (Exception $e) {
+            return $this->response(Status::INTERNAL_SERVER_ERROR, [
+                'message' => 'Failed to delete folder'
             ]);
         }
-
-        return $this->response(Status::OK, $this->model->toArray());
     }
 
     protected function getModelClass(): string

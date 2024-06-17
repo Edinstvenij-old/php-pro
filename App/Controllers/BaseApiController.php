@@ -3,7 +3,6 @@
 namespace App\Controllers;
 
 use App\Enums\Http\Status;
-use App\Models\Folder;
 use App\Models\User;
 use Core\Controller;
 use Core\Model;
@@ -15,6 +14,7 @@ abstract class BaseApiController extends Controller
     abstract protected function getModelClass(): string;
 
     protected ?Model $model;
+
     /**
      * @throws \Exception
      */
@@ -35,7 +35,9 @@ abstract class BaseApiController extends Controller
     protected function checkModelOwner(string $action, array $params, string $modelClass): void
     {
         if (in_array($action, ['update', 'delete'])) {
-            $result = call_user_func_array([$modelClass, 'find'], $params);
+            // Отримуємо екземпляр моделі
+            $modelInstance = new $modelClass();
+            $result = call_user_func_array([$modelInstance, 'find'], $params);
 
             if (!$result) {
                 throw new Exception("Resource is not found", Status::NOT_FOUND->value);
@@ -43,10 +45,9 @@ abstract class BaseApiController extends Controller
 
             $this->model = $result;
 
-            if (is_null($this->model->user_id) || $this->model->user_id !== authId()) {
+            if (!is_null($this->model->user_id) && $this->model->user_id !== authId()) {
                 throw new Exception("This resource is forbidden for you", Status::FORBIDDEN->value);
             }
         }
-
     }
 }
