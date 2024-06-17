@@ -34,7 +34,7 @@ class FoldersController extends BaseApiController
             }
 
             return $this->response(Status::OK, $folder->toArray());
-        } catch (Exception $e) {
+        } catch (Exception) {
             return $this->response(Status::INTERNAL_SERVER_ERROR, [
                 'message' => 'Failed to fetch folder details'
             ]);
@@ -52,7 +52,7 @@ class FoldersController extends BaseApiController
             }
 
             return $this->response(Status::UNPROCESSABLE_ENTITY, FolderValidator::getErrors());
-        } catch (Exception $e) {
+        } catch (Exception) {
             return $this->response(Status::INTERNAL_SERVER_ERROR, [
                 'message' => 'Failed to create folder'
             ]);
@@ -80,7 +80,7 @@ class FoldersController extends BaseApiController
             }
 
             return $this->response(Status::UNPROCESSABLE_ENTITY, FolderValidator::getErrors());
-        } catch (Exception $e) {
+        } catch (Exception) {
             return $this->response(Status::INTERNAL_SERVER_ERROR, [
                 'message' => 'Failed to update folder'
             ]);
@@ -105,7 +105,7 @@ class FoldersController extends BaseApiController
             return $this->response(Status::OK, [
                 'message' => 'Folder deleted successfully'
             ]);
-        } catch (Exception $e) {
+        } catch (Exception) {
             return $this->response(Status::INTERNAL_SERVER_ERROR, [
                 'message' => 'Failed to delete folder'
             ]);
