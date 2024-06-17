@@ -100,12 +100,12 @@ class FoldersController extends BaseApiController
                 ]);
             }
 
-            $folder->delete();
+            $folder->destroy($id);
 
             return $this->response(Status::OK, [
                 'message' => 'Folder deleted successfully'
             ]);
-        } catch (Exception) {
+        } catch (Exception $exception) {
             return $this->response(Status::INTERNAL_SERVER_ERROR, [
                 'message' => 'Failed to delete folder'
             ]);
