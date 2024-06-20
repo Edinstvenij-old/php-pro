@@ -69,6 +69,42 @@ class FoldersController extends BaseApiController
         return $this->response(Status::OK, $this->model->toArray());
     }
 
+    public function notes(int $id)
+    {
+        $folder = Folder::find($id);
+
+        if (!is_null($folder->user_id) && $folder->user_id !== authId()) {
+            throw new Exception("This resource is forbidden for you", Status::FORBIDDEN->value);
+        }
+
+        $notes = match(true) {
+            $folder->title === Folder::GENERAL_FOLDER && is_null($folder->user_id) => Note::where('user_id', SQL::EQUAL, authId())
+                ->and('folder_id', SQL::EQUAL, $folder->id)
+                ->get(),
+            $folder->title === Folder::SHARED_FOLDER && is_null($folder->user_id) =>
+            Note::select(['notes.*'])
+                ->join(
+                    'shared_notes',
+                    [
+                        [
+                            'left' => 'notes.id',
+                            'operator' => SQL::EQUAL->value,
+                            'right' => 'shared_notes.note_id'
+                        ],
+                        [
+                            'left' => 'shared_notes.user_id',
+                            'operator' => SQL::EQUAL->value,
+                            'right' => authId()
+                        ]
+                    ],
+                    'INNER'
+                )->get(),
+            default => Note::where('folder_id', SQL::EQUAL, $folder->id)->get(),
+        };
+
+        return $this->response(Status::OK, $notes);
+    }
+
     protected function getModelClass(): string
     {
         return Folder::class;

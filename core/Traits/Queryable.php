@@ -24,6 +24,32 @@ trait Queryable
         throw new Exception("Static method not allowed", 422);
     }
 
+
+    protected function openCondition(): void
+    {
+        if (in_array('beginCondition', $this->commands)) {
+            static::$query .= ' (';
+
+            unset(
+                $this->commands[
+                array_search('beginCondition', $this->commands)
+                ]
+            );
+        }
+    }
+
+    public function beginCondition(): static
+    {
+        $this->commands[] = 'beginCondition';
+        return $this;
+    }
+
+    public function endCondition(): static
+    {
+        static::$query .= ') ';
+        return $this;
+    }
+
     public function __call(string $name, array $arguments)
     {
         if (in_array($name, ['where'])) {
@@ -110,6 +136,12 @@ trait Queryable
         return db()->query(static::$query)->fetchAll(PDO::FETCH_CLASS, static::class);
     }
 
+    public function first(): static|null
+    {
+        return $this->get()[0] ?? null;
+    }
+
+
     protected function where(string $column, SQL $operator = SQL::EQUAL, mixed $value = null): static
     {
         $this->prevent(['order', 'limit', 'having', 'group'], 'WHERE can not be used after');
@@ -150,6 +182,8 @@ trait Queryable
         static::$query .= " AND";
         $this->commands[] = 'and';
 
+        $this->openCondition();
+
         return $this->where($column, $operator, $value);
     }
 
@@ -160,7 +194,36 @@ trait Queryable
         static::$query .= " OR";
         $this->commands[] = 'or';
 
+        $this->openCondition();
+
         return $this->where($column, $operator, $value);
+    }
+
+    /**
+     * @param string $table
+     * @param array $conditions = [
+     *      [
+     *          'left' => '',
+     *          'operator' => '',
+     *          'right' => '',
+     *      ]
+     * ]
+     * @param string $type
+     * @return $this
+     */
+    public function join(string $table, array $conditions, string $type = 'LEFT'): static
+    {
+        $this->require(['select'], 'JOIN can not be used without');
+
+        $this->commands[] = 'join';
+
+        static::$query .= " $type JOIN $table ON ";
+
+        $lastKey = array_key_last($conditions);
+        foreach ($conditions as $key => $condition) {
+            static::$query .= "$condition[left] $condition[operator] $condition[right]" . ($key !== $lastKey ? ' AND ' : '');
+        }
+        return $this;
     }
 
     public function orderBy(array $columns): static
@@ -185,6 +248,11 @@ trait Queryable
         $this->require(['select'], 'Method exists() can not be called without');
 
         return !empty($this->get());
+    }
+
+    public function sql(): string
+    {
+        return static::$query;
     }
 
     public function update(array $fields): static
