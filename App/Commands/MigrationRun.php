@@ -47,6 +47,11 @@ class MigrationRun implements Command
             ['.', '..']
         ));
 
+        // Exclude files ending with '~'
+        $migrations = array_filter($migrations, function($file) {
+            return substr($file, -1) !== '~';
+        });
+
         $this->cliHelper->notice(json_encode($migrations));
 
         $handledMigrations = $this->getHandledMigrations();
@@ -62,6 +67,14 @@ class MigrationRun implements Command
                 }
 
                 $sql = file_get_contents(static::MIGRATIONS_DIR . "/$migration");
+
+                if (empty($sql)) {
+                    $this->cliHelper->error("Файл миграции пуст: $migration");
+                    continue;
+                }
+
+                $this->cliHelper->notice("Содержимое файла миграции `$migration`: $sql");
+
                 $query = db()->prepare($sql);
 
                 if ($query->execute()) {
