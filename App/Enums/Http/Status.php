@@ -6,6 +6,7 @@ enum Status: int
 {
     case OK = 200;
     case CREATED = 201;
+    case NO_CONTENT = 204;
     case BAD_REQUEST = 400;
     case NOT_FOUND = 404;
     case FORBIDDEN = 403;
@@ -19,6 +20,7 @@ enum Status: int
         $description = match ($this->value) {
             200 => 'OK',
             201 => 'CREATED',
+            204 => 'NO_CONTENT',
             400 => 'Bad Request',
             401 => 'Unauthorized',
             404 => 'Not found',

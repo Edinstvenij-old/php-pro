@@ -1,9 +1,7 @@
 #!/usr/local/bin/php
 <?php
 const BASE_DIR = __DIR__;
-
 require BASE_DIR . '/vendor/autoload.php';
-
 use App\Commands\Command;
 use App\Commands\MigrationCreate;
 use App\Commands\MigrationRun;
@@ -32,7 +30,6 @@ class CliHelper extends CLI
             "migration:run" => new MigrationRun($this, $options->getArgs()),
             default => null
         };
-
         if ($cmd instanceof Command) {
             call_user_func([$cmd, 'handle']);
         } else {
@@ -41,6 +38,5 @@ class CliHelper extends CLI
         }
     }
 }
-
 $cli = new CliHelper();
 $cli->run();

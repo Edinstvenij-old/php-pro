@@ -7,6 +7,7 @@ use App\Enums\DB\SQL;
 use App\Enums\Http\Status;
 use App\Models\Note;
 use App\Validators\Notes\CreateNoteValidator;
+use App\Validators\Notes\UpdateNoteValidator;
 use Exception;
 
 class NotesController extends BaseApiController
@@ -59,11 +60,11 @@ class NotesController extends BaseApiController
             'updated_at' => date('Y-m-d H:i:s')
         ];
 
-        if (NoteValidator::validate($fields) && $Note = $this->model->update($updateFields)) {
+        if (UpdateNoteValidator::validate($fields) && $Note = $this->model->update($updateFields)) {
             return $this->response(Status::OK, $Note->toArray());
         }
 
-        return $this->response(Status::OK, errors: NoteValidator::getErrors());
+        return $this->response(Status::OK, errors: UpdateNoteValidator::getErrors());
     }
 
     public function delete(int $id): array

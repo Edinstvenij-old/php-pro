@@ -5,7 +5,7 @@ namespace App\Validators;
 use App\Enums\DB\SQL;
 use App\Models\Folder;
 
-class FolderValidator extends \App\Validators\BaseValidator
+class FolderValidator extends BaseValidator
 {
     protected static array $rules = [
         'title' => '/[\w\s\(\)\-]{3,}/i'

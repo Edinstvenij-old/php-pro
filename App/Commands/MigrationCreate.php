@@ -15,28 +15,34 @@ class MigrationCreate implements Command
 
     public function handle(): void
     {
-        $this->createDir();
-        $this->createMigration();
+        $this->createMigrationDirectory();
+        $this->createMigrationFile();
     }
 
-    protected function createDir(): void
+    protected function createMigrationDirectory(): void
     {
         if (!file_exists(static::MIGRATIONS_DIR)) {
             mkdir(static::MIGRATIONS_DIR);
+            $this->cliHelper->info("Migrations directory created: " . static::MIGRATIONS_DIR);
         }
     }
 
-    protected function createMigration(): void
+    protected function createMigrationFile(): void
     {
-        $name = time() . '_' . $this->args[0];
+        $name = uniqid() . '_' . $this->sanitizeMigrationName($this->args[0]);
         $fullPath = static::MIGRATIONS_DIR . "/$name.sql";
 
         try {
-            file_put_contents($fullPath, '', FILE_APPEND);
-            $this->cliHelper->info("File was successfully created!");
-            $this->cliHelper->info("File: $fullPath");
+            file_put_contents($fullPath, '');
+            $this->cliHelper->success("Migration file successfully created: $fullPath");
         } catch (Exception $exception) {
-            $this->cliHelper->error($exception->getMessage());
+            $this->cliHelper->error("Failed to create migration file: " . $exception->getMessage());
         }
+    }
+
+    protected function sanitizeMigrationName(string $name): string
+    {
+        // Remove non-alphanumeric characters and spaces
+        return preg_replace('/[^a-zA-Z0-9]+/', '_', $name);
     }
 }
