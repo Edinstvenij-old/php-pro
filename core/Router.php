@@ -50,7 +50,7 @@ class Router
     static protected function setUri(string $uri): static
     {
         $uri = preg_replace('/\//', '\\/', $uri);
-        $uri = preg_replace('/\{([a-z_-]+):([^}]+)}/', '(?P<$1>$2)', $uri);
+        $uri = preg_replace('/\{([a-zA-Z_-]+):([^}]+)}/', '(?P<$1>$2)', $uri);
         $uri = "/^$uri$/i";
 
         $router = static::getInstance();
